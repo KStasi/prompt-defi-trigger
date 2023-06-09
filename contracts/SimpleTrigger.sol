@@ -5,12 +5,19 @@ import "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 
-contract SimpleTrigger is AutomationCompatible {
+contract SimpleTrigger is AutomationCompatible, UUPSUpgradeable, Initializable {
     struct TokenInfo {
         address token;
         AggregatorV3Interface priceFeed;
         uint24 poolFee;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "only owner");
+        _;
     }
 
     address public owner;
@@ -21,21 +28,38 @@ contract SimpleTrigger is AutomationCompatible {
     TokenInfo[] public tokens;
     address public usdc;
 
-    constructor(
+    event SimpleTriggerInitialized(address indexed owner);
+
+    constructor(address _uniswapRouter) {
+        uniswapRouter = ISwapRouter(_uniswapRouter);
+    }
+
+    function initialize(
         TokenInfo[] memory _tokens,
         uint256 _stopLoss,
         uint256 _takeProfit,
-        address _uniswapRouter,
+        address _owner,
         address _usdc
-    ) {
+    ) public virtual initializer {
+        _initialize(_tokens, _stopLoss, _takeProfit, _owner, _usdc);
+    }
+
+    function _initialize(
+        TokenInfo[] memory _tokens,
+        uint256 _stopLoss,
+        uint256 _takeProfit,
+        address _owner,
+        address _usdc
+    ) internal virtual {
         for (uint i = 0; i < _tokens.length; i++) {
             tokens.push(_tokens[i]);
         }
         stopLoss = _stopLoss;
         takeProfit = _takeProfit;
-        uniswapRouter = ISwapRouter(_uniswapRouter);
-        owner = msg.sender;
+        owner = _owner;
         usdc = _usdc;
+
+        emit SimpleTriggerInitialized(owner);
     }
 
     function checkUpkeep(
@@ -88,7 +112,15 @@ contract SimpleTrigger is AutomationCompatible {
             uint256 balance = IERC20(tokens[i].token).balanceOf(address(this));
             totalValue += balance * uint256(price);
         }
-        upkeepNeeded = (totalValue <= stopLoss || totalValue >= takeProfit) && totalValue > 0;
+        upkeepNeeded =
+            (totalValue <= stopLoss || totalValue >= takeProfit) &&
+            totalValue > 0;
         return upkeepNeeded;
+    }
+
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal view override onlyOwner {
+        (newImplementation);
     }
 }
