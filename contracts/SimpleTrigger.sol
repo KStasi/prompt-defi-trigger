@@ -88,7 +88,7 @@ contract SimpleTrigger is AutomationCompatible {
             uint256 balance = IERC20(tokens[i].token).balanceOf(address(this));
             totalValue += balance * uint256(price);
         }
-        upkeepNeeded = (totalValue <= stopLoss || totalValue >= takeProfit);
+        upkeepNeeded = (totalValue <= stopLoss || totalValue >= takeProfit) && totalValue > 0;
         return upkeepNeeded;
     }
 }
