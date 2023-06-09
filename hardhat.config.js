@@ -16,4 +16,7 @@ module.exports = {
       accounts: [GOERLI_PRIVATE_KEY],
     },
   },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
 };

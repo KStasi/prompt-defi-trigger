@@ -39,6 +39,8 @@
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@uniswap/v3-periphery": "^1.4.3",
     "bignumber.js": "^9.1.1",
-    "dotenv": "^16.1.4"
+    "dotenv": "^16.1.4",
+    "hardhat-deploy": "^0.11.30",
+    "hardhat-deploy-ethers": "^0.3.0-beta.13"
   }
 }
