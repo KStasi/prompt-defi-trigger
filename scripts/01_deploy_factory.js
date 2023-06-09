@@ -71,7 +71,7 @@ async function main() {
   ];
 
   for (const config of triggerConfigs) {
-    const trigger = await simpleTriggerFactory.createSimpleTrigger(
+    await simpleTriggerFactory.createSimpleTrigger(
       config.tokens, config.stopLoss, config.takeProfit, config.uniswapRouter, config.usdc
     );
     const triggerCount = await simpleTriggerFactory.triggerCount();

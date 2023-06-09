@@ -8,6 +8,7 @@ contract SimpleTriggerFactory {
         address indexed triggerAddress,
         address indexed owner
     );
+
     uint256 public triggerCount;
     mapping(uint256 => address) public triggers;
 
