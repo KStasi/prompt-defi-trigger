@@ -1,0 +1,11 @@
+{
+  "solidity.compileUsingRemoteVersion": "v0.8.18+commit.87f61d96",
+  "editor.defaultFormatter": "JuanBlanco.solidity",
+  "solidity.defaultCompiler": "remote",
+  "solidity.packageDefaultDependenciesDirectory": "/Users/kstasi/prompt-defi-trigger/node_modules",
+  "solidity.remappingsUnix": [
+    "@chainlink/=node_modules/@chainlink/",
+    "@uniswap/=node_modules/@uniswap/",
+    "@openzeppelin/=node_modules/@openzeppelin/",
+  ]
+}

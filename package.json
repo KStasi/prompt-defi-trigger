@@ -1,0 +1,42 @@
+{
+  "name": "prompt-defi-trigger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy": "hardhat run ./scripts/01_deploy_factory.js --network hardhat",
+    "test": "hardhat test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KStasi/prompt-defi-trigger.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KStasi/prompt-defi-trigger/issues"
+  },
+  "homepage": "https://github.com/KStasi/prompt-defi-trigger#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.1",
+    "@nomicfoundation/hardhat-ethers": "^3.0.2",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^1.0.1",
+    "@typechain/ethers-v6": "^0.4.0",
+    "@typechain/hardhat": "^8.0.0",
+    "chai": "^4.3.7",
+    "ethers": "^6.5.1",
+    "hardhat": "^2.15.0",
+    "hardhat-gas-reporter": "^1.0.9",
+    "solidity-coverage": "^0.8.2",
+    "typechain": "^8.2.0"
+  },
+  "dependencies": {
+    "@chainlink/contracts": "^0.6.1",
+    "@uniswap/v3-periphery": "^1.4.3",
+    "bignumber.js": "^9.1.1",
+    "dotenv": "^16.1.4"
+  }
+}
