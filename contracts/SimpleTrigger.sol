@@ -7,11 +7,13 @@ import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract SimpleTrigger is AutomationCompatible, UUPSUpgradeable, Initializable {
     struct TokenInfo {
         address token;
         AggregatorV3Interface priceFeed;
+        uint256 decimalMultiplier;
         uint24 poolFee;
     }
 
@@ -24,7 +26,7 @@ contract SimpleTrigger is AutomationCompatible, UUPSUpgradeable, Initializable {
     uint256 public stopLoss; // in USDC
     uint256 public takeProfit; // in USDC
 
-    ISwapRouter public uniswapRouter;
+    ISwapRouter public immutable uniswapRouter;
     TokenInfo[] public tokens;
     address public usdc;
 
@@ -75,13 +77,6 @@ contract SimpleTrigger is AutomationCompatible, UUPSUpgradeable, Initializable {
         for (uint256 i = 0; i < tokens.length; i++) {
             uint256 balance = IERC20(tokens[i].token).balanceOf(address(this));
             if (balance > 0) {
-                TransferHelper.safeTransferFrom(
-                    tokens[i].token,
-                    owner,
-                    address(this),
-                    balance
-                );
-
                 TransferHelper.safeApprove(
                     tokens[i].token,
                     address(uniswapRouter),
@@ -108,9 +103,12 @@ contract SimpleTrigger is AutomationCompatible, UUPSUpgradeable, Initializable {
     function _checkUpkeep() internal view returns (bool upkeepNeeded) {
         uint256 totalValue = 0;
         for (uint256 i = 0; i < tokens.length; i++) {
+            ERC20 token = ERC20(tokens[i].token);
             (, int256 price, , , ) = tokens[i].priceFeed.latestRoundData();
-            uint256 balance = IERC20(tokens[i].token).balanceOf(address(this));
-            totalValue += balance * uint256(price);
+            uint256 balance = token.balanceOf(address(this));
+            totalValue +=
+                (balance * uint256(price)) /
+                tokens[i].decimalMultiplier;
         }
         upkeepNeeded =
             (totalValue <= stopLoss || totalValue >= takeProfit) &&
